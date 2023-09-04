@@ -130,4 +130,48 @@ async function fill_form () {
   console.log("feedback done");
 }
 
-fill_form ();
+function getSelectionText() {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    return text;
+}
+
+async function launch_feedback () {
+  // Copy current selection to clipboard
+  console.log ("launch_feedback");
+  try {
+    await navigator.clipboard.writeText (getSelectionText ());
+  } catch (err) {
+    console.log("Failed to copy: ", err);
+  }
+
+  // Open feedback in new window
+  console.log ("Opening window");
+  window.open("https://www.abc.net.au/news/contact");
+  console.log ("Opened window");
+}
+
+my_url = window.location.href;
+if (my_url.endsWith("abc.net.au/news/contact"))
+  fill_form ();
+else {
+  console.log("ABC: not feedback");
+  // Make Alt+C copy the current selection, and open abc.net.au/news/contact
+
+  //addEventListener ("send-feedback", launch_feedback);
+
+  //browser.commands.onCommand.addListener((command) => {
+  //if (command === "send-feedback") {
+  //  launch_feedback ();
+  //}
+
+  document.getElementsByTagName("BODY")[0]
+          .addEventListener ("keydown", (ev) => {
+			      console.log("body keydown"); console.log(ev);
+			      if (ev.altKey && ev.key=="c") launch_feedback();
+			   });
+}
