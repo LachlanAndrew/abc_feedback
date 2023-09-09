@@ -61,9 +61,10 @@
 //    "default_popup": "popup/geo.html"
 //  },
 
-//  "permissions": ["webNavigation"],
+  "permissions": ["clipboardWrite"],
 
 //  "user_scripts": {
+
 //    "api_script": "apiscript.js"
 //  },
 
