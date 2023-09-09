@@ -142,28 +142,8 @@ function next_input_after (fields) {
 	//el[n].value = fields[curr];
 	console.log ("old", el[n]);
 	setNativeValue(el[n], fields[curr]);
-	//el[n].select();
-	//el[n].value=fields[curr];
-	//setValue (el[n], fields[curr])
-	//el[n]._valueTracker.setValue (fields[curr]);
-	//console.log ("curr", "fields[curr]");
-	//console.log(curr, fields[curr]);
 	console.log ("new", el[n].value);
 	console.log ("new", el[n]);
-	/*
-        simulate (el[n], "click");
-	console.log ("after click", el[n].value);
-	console.log ("after click", el[n]);
-	el[n].focus();
-	//el[n].value = fields[curr];
-	el[n].setValue (fields[curr]);
-	el[n].blur();
-	console.log ("after blur", el[n].value);
-	console.log ("after blur", el[n]);
-	//el[n].value(fields[curr]);
-	// TODO simualate a keypress of Enter
-	//el[n].set (fields[curr]);
-	*/
 	curr = "";
       }
     }
@@ -191,13 +171,6 @@ async function fill_form () {
       to_click[el[n].innerHTML] = 1;
       simulate (el[n], "click");
     }
-    //else {
-    //  console.log ("No");
-    //  console.log (el[n].innerHTML);
-    //}
-    //console.log (el[n]);
-    //console.log (el[n].innerHTML);
-    //console.log (el[n].parentElement);
   }
 
   fields = {"Email": "lachlanbis@gmail.com",
