@@ -98,6 +98,8 @@ var defaultOptions = {
     cancelable: true
 }
 
+/* function setNativeValue() from [https://stackoverflow.com/questions/40894637/how-to-programmatically-fill-input-elements-built-with-react/70848568] */
+
 /**
  * See [Modify React Component's State using jQuery/Plain Javascript from Chrome Extension](https://stackoverflow.com/q/41166005)
  * See https://github.com/facebook/react/issues/11488#issuecomment-347775628
@@ -133,10 +135,10 @@ function next_input_after (fields) {
   for (n in el) {
     if (el[n].innerHTML in fields) {
       curr = el[n].innerHTML;
-      console.log("Found");
+      console.log("Found", curr);
       console.log(el[n]);
-      el[n].innerHTML = fields[curr];	// HACK.  Replace prompt by contents
-    } else if (el[n].tagName == "INPUT") {
+      //el[n].innerHTML = fields[curr];	// HACK.  Replace prompt by contents
+    } else if (el[n].tagName in {"INPUT":0, "TEXTAREA":0}) {
       if (curr != "") {
 	retval.push (el[n]);
 	//el[n].value = fields[curr];
@@ -144,7 +146,10 @@ function next_input_after (fields) {
 	setNativeValue(el[n], fields[curr]);
 	console.log ("new", el[n].value);
 	console.log ("new", el[n]);
+	fields[curr] = el[n];
 	curr = "";
+      } else if (el[n].type == "checkbox") {
+	simulate (el[n], "click");
       }
     }
   }
@@ -154,36 +159,50 @@ function next_input_after (fields) {
 async function fill_form () {
   console.log("feedback here");
 
-  await delay (2000);
-
-  console.log(document);
-
   to_click = {"I have feedback":0,
               "ABC News website":0,
-              "Outer suburbs of a capital city":0};
+              "Outer suburbs of a capital city":0,
+	      "No":0};
 
-  //for (n in document.getElementsByTagName("*")) { % }
-  const el = document.getElementsByTagName("span");
-  for (n in el) {
-    if (el[n].innerHTML in to_click) {
-      //console.log ("Yes");
-      //console.log (el[n]);
-      to_click[el[n].innerHTML] = 1;
-      simulate (el[n], "click");
+  for (;;) {
+    await delay (500);
+
+    console.log(document);
+
+    //for (n in document.getElementsByTagName("*")) { % }
+    const el = document.getElementsByTagName("span");
+    for (n in el) {
+      if (el[n].innerHTML in to_click) {
+	//console.log ("Yes");
+	//console.log (el[n]);
+	to_click[el[n].innerHTML] = 1;
+	simulate (el[n], "click");
+      }
     }
+    anyNotSet = false;
+    for (e in to_click)
+      if (to_click[e] == 0)
+        anyNotSet = true;
+    if (!anyNotSet)
+      break;
   }
 
   fields = {"Email": "lachlanbis@gmail.com",
-//            "If this relates to a specific story/discussion published on the ABC website, please provide a URL.": document.referrer,
-//	    "First name": "Lachlan",
-//	    "Location": "Glen Iris, VIC 3146",
+            "If this relates to a specific story/discussion published on the ABC website, please provide a URL.": document.referrer,
+	    "First name": "Lachlan",
+	    "Location": "Glen Iris, VIC 3146",
 //	    "What do you want to tell us about, or what questions do you have?": await navigator.clipboard.readText ()
+	    "What do you want to tell us about, or what questions do you have?": ""
 	   };
-  console.log (fields);
-  fields = {"If this relates to a specific story/discussion published on the ABC website, please provide a URL.": document.referrer};
   console.log(fields);
   inputs = next_input_after (fields);
   console.log(inputs);
+
+  for (e in fields) {
+    console.log ("e is", e);
+    if (e.startsWith ("What do you want"))
+      fields[e].focus ();
+  }
 
   console.log("feedback done");
 }
