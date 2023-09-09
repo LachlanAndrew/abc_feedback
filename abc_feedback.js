@@ -98,6 +98,33 @@ var defaultOptions = {
     cancelable: true
 }
 
+/**
+ * See [Modify React Component's State using jQuery/Plain Javascript from Chrome Extension](https://stackoverflow.com/q/41166005)
+ * See https://github.com/facebook/react/issues/11488#issuecomment-347775628
+ * See [How to programmatically fill input elements built with React?](https://stackoverflow.com/q/40894637)
+ * See https://github.com/facebook/react/issues/10135#issuecomment-401496776
+ *
+ * @param {HTMLInputElement | HTMLSelectElement} el
+ * @param {string} value
+ */
+function setNativeValue(el, value) {
+  const previousValue = el.value;
+
+  if (el.type === 'checkbox' || el.type === 'radio') {
+    if ((!!value && !el.checked) || (!!!value && el.checked)) {
+      el.click();
+    }
+  } else el.value = value;
+
+  const tracker = el._valueTracker;
+  if (tracker) {
+    tracker.setValue(previousValue);
+  }
+
+  // 'change' instead of 'input', see https://github.com/facebook/react/issues/11488#issuecomment-381590324
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
 function next_input_after (fields) {
   console.log ("in next_input_after");
   const el = document.getElementsByTagName("*");
@@ -114,12 +141,16 @@ function next_input_after (fields) {
 	retval.push (el[n]);
 	//el[n].value = fields[curr];
 	console.log ("old", el[n]);
-	setValue (el[n], fields[curr])
+	setNativeValue(el[n], fields[curr]);
+	//el[n].select();
+	//el[n].value=fields[curr];
+	//setValue (el[n], fields[curr])
 	//el[n]._valueTracker.setValue (fields[curr]);
 	//console.log ("curr", "fields[curr]");
 	//console.log(curr, fields[curr]);
 	console.log ("new", el[n].value);
 	console.log ("new", el[n]);
+	/*
         simulate (el[n], "click");
 	console.log ("after click", el[n].value);
 	console.log ("after click", el[n]);
@@ -132,6 +163,7 @@ function next_input_after (fields) {
 	//el[n].value(fields[curr]);
 	// TODO simualate a keypress of Enter
 	//el[n].set (fields[curr]);
+	*/
 	curr = "";
       }
     }
