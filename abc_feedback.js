@@ -151,9 +151,25 @@ function next_input_after (fields) {
       } else if (el[n].type == "checkbox") {
 	simulate (el[n], "click");
       }
+    //} else if (el[n].InnerHTML == "Thanks.") {
+    //	console.log("trying to close");
+    //	console.log(el[n]);
+    //	window.close ();
     }
   }
   return retval;
+}
+
+async function close_when_found (str) {
+    for (;;) {
+        await delay (10000);
+	const el = document.getElementsByTagName("p");
+	for (n in el) {
+	  if (el[n].innerHTML == str) {
+	    window.close ()
+	  }
+	}
+    }
 }
 
 async function fill_form () {
@@ -205,6 +221,8 @@ async function fill_form () {
   }
 
   console.log("feedback done");
+
+  close_when_found ("Thanks.");
 }
 
 function getSelectionText() {
